@@ -25,9 +25,9 @@ public class JB extends JComponent implements Runnable, KeyListener
 	{
 
 
-		this.addKeyListener(this);
-		this.setFocusable(true);
-		this.setFocusTraversalKeysEnabled(false);
+		addKeyListener(this);
+		setFocusable(true);
+		setFocusTraversalKeysEnabled(false);
 
 		try
 		{
@@ -104,15 +104,14 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 	}
 
-	@Override
 	public void keyPressed(KeyEvent e) {
+		System.out.println("here");
 		keys[e.getKeyCode()] = true;
 		System.out.println(e.getKeyChar());
 	}
 
-	@Override
 	public void keyReleased(KeyEvent e) {
-		keys[e.getKeyCode()] = false;
+		
 	}
 
 
@@ -120,12 +119,19 @@ public class JB extends JComponent implements Runnable, KeyListener
 	public void run()
 	{
 		while (true) {
+			try
+			{
 			if (keys[KeyEvent.VK_LEFT]) left();
 			if (keys[KeyEvent.VK_UP]) up();
 			if (keys[KeyEvent.VK_DOWN]) down();
 			if (keys[KeyEvent.VK_RIGHT]) right();
-
 			repaint();
+
+			Thread.sleep(20);
+			}catch(InterruptedException e)
+			{
+				
+			}
 		}
 	}
 
