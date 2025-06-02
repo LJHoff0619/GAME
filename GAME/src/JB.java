@@ -18,16 +18,27 @@ public class JB extends JComponent implements Runnable, KeyListener
 	private BufferedImage JB_left;
 	private BufferedImage JB_right;
 	private BufferedImage x;
-
+	private sound s;
 	private boolean[] keys = new boolean[256];
 
 	public JB()
 	{
+		
+		
+		
 
-
+//		s = new Sound();
 		addKeyListener(this);
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
+		try
+		{
+			JB_not_moving = ImageIO.read(Test.class.getResourceAsStream("JB_not_moving.jpg"));
+		}
+		catch(IOException | IllegalArgumentException e)
+		{
+			e.printStackTrace();
+		}
 
 		try
 		{
@@ -65,6 +76,9 @@ public class JB extends JComponent implements Runnable, KeyListener
 		{
 			e.printStackTrace();
 		}
+		
+		
+		
 
 	}
 
@@ -84,56 +98,71 @@ public class JB extends JComponent implements Runnable, KeyListener
 	{
 		x = JB_right;
 	}
+	public void notMoving()
+	{
+		x= JB_not_moving;
+	}
 
 
 	public void startAnimation()
 	{
 		Thread t = new Thread(this);
 		t.start();
+		notMoving();
 	}
 
 	public void paintComponent(Graphics g)
 	{
-		g.drawImage(x, 100, 200, null);
+  		g.drawImage(x, 100, 200, null);
 
 	}
 	public void keyTyped(KeyEvent e) 
 	{
-
-
-
+	
 	}
 
-	public void keyPressed(KeyEvent e) {
-		System.out.println("here");
-		keys[e.getKeyCode()] = true;
-		System.out.println(e.getKeyChar());
-	}
-
-	public void keyReleased(KeyEvent e) {
+	
+	public void keyPressed(KeyEvent e) 
+	{
+		System.out.println(e.getKeyCode());
+		if (e.getKeyCode() == 37) left();
+		if (e.getKeyCode() == 39) right();
+		if (e.getKeyCode() == 38) up();
+		if (e.getKeyCode() == 40) down();
 		
+	}
+
+
+	public void keyReleased(KeyEvent e) 
+	{
+		try 
+		{
+			Thread.sleep(20);
+		} 
+		catch (InterruptedException e1) 
+		{
+			
+			e1.printStackTrace();
+		}
+		notMoving();
 	}
 
 
 
 	public void run()
 	{
-		while (true) {
-			try
-			{
-			if (keys[KeyEvent.VK_LEFT]) left();
-			if (keys[KeyEvent.VK_UP]) up();
-			if (keys[KeyEvent.VK_DOWN]) down();
-			if (keys[KeyEvent.VK_RIGHT]) right();
-			repaint();
 
-			Thread.sleep(20);
-			}catch(InterruptedException e)
-			{
-				
+		while (true) {
+			try {
+				repaint();
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
 
 }
+
+
