@@ -18,22 +18,19 @@ public class JB extends JComponent implements Runnable, KeyListener
 	private BufferedImage JB_left;
 	private BufferedImage JB_right;
 	private BufferedImage x;
-	private sound s;
+	private Sound s;
 	private boolean[] keys = new boolean[256];
 
 	public JB()
 	{
-		
-		
-		
 
-//		s = new Sound();
+		s = new Sound("G:\\My Drive\\10th Grade\\APCSA\\0_GAME_0\\src\\otj.wav");
 		addKeyListener(this);
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
 		try
 		{
-			JB_not_moving = ImageIO.read(Test.class.getResourceAsStream("JB_not_moving.jpg"));
+			JB_not_moving = ImageIO.read(Test.class.getResourceAsStream("JB_new_not_moving.jpg"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -42,7 +39,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 		try
 		{
-			JB_down = ImageIO.read(Test.class.getResourceAsStream("JB_down.jpg"));
+			JB_down = ImageIO.read(Test.class.getResourceAsStream("JB_new_down.jpg"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -51,7 +48,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 		try
 		{
-			JB_left = ImageIO.read(Test.class.getResourceAsStream("JB_left.jpg"));
+			JB_left = ImageIO.read(Test.class.getResourceAsStream("JB_new_left.jpg"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -61,7 +58,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 		try
 		{
-			JB_up = ImageIO.read(Test.class.getResourceAsStream("JB_up.jpg"));
+			JB_up = ImageIO.read(Test.class.getResourceAsStream("JB_new_up.jpg"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -70,15 +67,12 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 		try
 		{
-			JB_right = ImageIO.read(Test.class.getResourceAsStream("JB_right.jpg"));
+			JB_right = ImageIO.read(Test.class.getResourceAsStream("JB_new_right.jpg"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
 			e.printStackTrace();
 		}
-		
-		
-		
 
 	}
 
@@ -151,9 +145,10 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 	public void run()
 	{
-
+		s.makeSound();
 		while (true) {
 			try {
+				
 				repaint();
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -164,5 +159,3 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 
 }
-
-
