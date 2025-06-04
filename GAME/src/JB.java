@@ -25,11 +25,14 @@ public class JB extends JComponent implements Runnable, KeyListener
 	private BufferedImage y;
 	private BufferedImage hoop;
 	private BufferedImage swoosh;
-	private BufferedImage good;
+	private BufferedImage green;
 	private BufferedImage ok;
 	private BufferedImage booty;
-	
+	private BufferedImage mad;
 	private BufferedImage onethree;
+	private BufferedImage airball;
+	
+	private String scoreee;
 	
 	private sound s;
 	private int x_pos;
@@ -40,12 +43,16 @@ public class JB extends JComponent implements Runnable, KeyListener
 	private int y_pos4;
 	private boolean[] keys = new boolean[256];
 	
+	private long time;
+	
 	
 	
 	private int score;
 
 	public JB()
 	{
+		time = System.currentTimeMillis();
+		
 		
 		x_pos = 385;
 		y_pos = -100;
@@ -72,6 +79,25 @@ public class JB extends JComponent implements Runnable, KeyListener
 		{
 			e.printStackTrace();
 		}
+		
+		try
+		{
+			airball = ImageIO.read(Test.class.getResourceAsStream("airball.jpg"));
+		}
+		catch(IOException | IllegalArgumentException e)
+		{
+			e.printStackTrace();
+		}
+		
+		try
+		{
+			mad = ImageIO.read(Test.class.getResourceAsStream("mad.jpg"));
+		}
+		catch(IOException | IllegalArgumentException e)
+		{
+			e.printStackTrace();
+		}
+
 		
 		try
 		{
@@ -103,7 +129,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 		
 		try
 		{
-			good = ImageIO.read(Test.class.getResourceAsStream("good.jpg"));
+			green = ImageIO.read(Test.class.getResourceAsStream("greenfn.jpg"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -113,7 +139,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 		
 		try
 		{
-			ok = ImageIO.read(Test.class.getResourceAsStream("ok.jpg"));
+			ok = ImageIO.read(Test.class.getResourceAsStream("brick.jpg"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -241,7 +267,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 	}
 	public void good()
 	{
-		y = good;
+		y = green;
 	}
 	public void ok()
 	{
@@ -251,12 +277,18 @@ public class JB extends JComponent implements Runnable, KeyListener
 	{
 		y = booty;
 	}
+	public void airball()
+	{
+		y = airball;
+	}
 	public void onethree()
 	{
 		y= onethree;
 	}
-	
-	
+	public void mad()
+	{
+		x = mad;
+	}
 	
 
 	public void startAnimation()
@@ -268,7 +300,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 	public void paintComponent(Graphics g)
 	{
-  		g.drawImage(x, 100, 200, null);
+  		g.drawImage(x, 50, 400, null);
   		
   		g.drawImage(AU, 750, y_pos3, null);
   		g.drawImage(AD, 600, y_pos4, null);
@@ -279,8 +311,9 @@ public class JB extends JComponent implements Runnable, KeyListener
   		g.drawImage(hoop, 550, 400, null);
   		g.drawImage(hoop, 700, 400, null);
   		g.drawImage(hoop, 850, 400, null);
+  		g.drawString("string", 50 ,50 );
   		
-  		g.drawImage(y, 100, 50,null);
+  		g.drawImage(y, 0, 100,null);
 
 	}
 	public void keyTyped(KeyEvent e) 
@@ -297,22 +330,38 @@ public class JB extends JComponent implements Runnable, KeyListener
 			left();
 				if((y_pos<= 450 && y_pos >425) || (y_pos< 375 && y_pos >= 350))
 				{
-					good();
-					
+					swoosh();
 					score+=2;
+					
 					System.out.println("+2! score:" + score);
 					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 					
 					
 				}
-				if(y_pos <= 425 && y_pos >= 375)
+				else if(y_pos <= 425 && y_pos >= 375)
 				{
-					swoosh();
+					good();	
 					score+=3;
 					System.out.println("+3! score: " + score);
-					
 					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 				}
+				
+				else if (y_pos <= 490 && y_pos >450 || y_pos < 350 && y_pos >= 310)
+				{
+					ok();
+					score+=1;
+					System.out.println("+1! score: " + score);
+					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
+				}
+				else
+				{
+					airball();
+					score-=1;
+					System.out.println("-1! score: " + score);
+					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
+				}
+				
+				
 				
 			}
 		if (e.getKeyCode() == 39) 
@@ -320,17 +369,32 @@ public class JB extends JComponent implements Runnable, KeyListener
 			right();
 			if((y_pos2<= 450 && y_pos2 >425) || (y_pos2< 375 && y_pos2 >= 350))
 			{
-				good();
+				swoosh();
+				
 				score+=2;
 				System.out.println("+2! score:" + score);
 				y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 				
 			}
-			if(y_pos2 <= 425 && y_pos2 >= 375)
+			else if(y_pos2 <= 425 && y_pos2 >= 375)
 			{
-				swoosh();
+				good();
 				score+=3;
 				System.out.println("+3! score: " + score);
+				y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
+			}
+			else if (y_pos2 <= 490 && y_pos2 >450 || y_pos2 < 350 && y_pos2 >= 310)
+			{
+				ok();
+				score+=1;
+				System.out.println("+1! score: " + score);
+				y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
+			}
+			else
+			{
+				airball();
+				score-=1;
+				System.out.println("-1! score: " + score);
 				y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 			}
 		}
@@ -340,37 +404,67 @@ public class JB extends JComponent implements Runnable, KeyListener
 			up();
 			if((y_pos3<= 450 && y_pos3 >425) || (y_pos3< 375 && y_pos3 >= 350))
 			{
-				good();
+				swoosh();
+				
 				score+=2;
 				System.out.println("+2! score:" + score);
 				y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 			
 				
 			}
-			if(y_pos3 <= 425 && y_pos3 >= 375)
+			else if(y_pos3 <= 425 && y_pos3 >= 375)
 			{
-				swoosh();
+				good();
 				score+=3;
 				System.out.println("+3! score: " + score);
 				y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 			}
+			else if (y_pos3 <= 490 && y_pos3 >450 || y_pos3 < 350 && y_pos3 >= 310)
+			{
+				ok();
+				score+=1;
+				System.out.println("+1! score: " + score);
+				y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
+			}
+			else
+			{
+				airball();
+				score-=1;
+				System.out.println("-1! score: " + score);
+				y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
+			}
+			
 			}
 		if (e.getKeyCode() == 40) 
 		{
 		down();
 		if((y_pos4<= 450 && y_pos4 >425) || (y_pos4< 375 && y_pos4 >= 350))
 		{
-			good();
+			swoosh();
 			score+=2;
 			System.out.println("+2! score:" + score);
 			y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 			
 		}
-		if(y_pos4 <= 425 && y_pos4 >= 375)
+		else if(y_pos4 <= 425 && y_pos4 >= 375)
 		{
-			swoosh();
+			good();
 			score+=3;
 			System.out.println("+3! score: " + score);
+			y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
+		}
+		else if (y_pos4 <= 490 && y_pos4 >450 || y_pos4 < 350 && y_pos4 >= 310)
+		{
+			ok();
+			score+=1;
+			System.out.println("+1! score: " + score);
+			y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
+		}
+		else
+		{
+			airball();
+			score-=1;
+			System.out.println("-1! score: " + score);
 			y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 		}
 		}
@@ -401,45 +495,46 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 		while (true) {
 			try {
-				y_pos+=20;
-				y_pos2+=20;
-				y_pos3+=20;
-				y_pos4+=20;
+				y_pos+=15;
+				y_pos2+=15;
+				y_pos3+=15;
+				y_pos4+=15;
 				if(y_pos > 600)
 				{
+					mad();
 					booty();
 					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-					score-= 1;
-					System.out.println("-1! :" + score +"  " + y_pos);
+					score-= 2;
+					System.out.println("-2! :" + score +"  " + y_pos);
 				}
 				
 				if(y_pos2 > 600)
 				{
+					mad();
 					booty();
 					y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-					score-= 1;
-					System.out.println("-1! :" + score);
+					score-= 2;
+				System.out.println("-2! :" + score);
 				}
 				
 				if(y_pos3 > 600)
 				{
+					mad();
 					booty();
 					y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-					score-= 1;
-					System.out.println("-1! :" + score);
+					score-= 2;
+					System.out.println("-2! :" + score);
 				}
 				
 				if(y_pos4 > 600)
 				{
+					mad();
 					booty();
 					y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-					score-= 1;
-					System.out.println("-1! :" + score);
+					score-= 2;
+					System.out.println("-2! :" + score);
 				}
-				
-				
-				
-				
+						
 				
 				repaint();
 				Thread.sleep(20);
