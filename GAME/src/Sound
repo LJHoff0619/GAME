@@ -1,34 +1,51 @@
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Frame;
-import java.awt.Graphics;
+import java.io.File;
+import java.applet.AudioClip;
+import java.applet.Applet;
+import java.net.MalformedURLException;
+import java.net.URL;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioFormat;
+import java.net.URL;
+import java.net.MalformedURLException;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
-import javax.swing.JButton;
+import java.io.File;
 
-public class Test
+public class Sound 
 {
 
-	public static void main(String []args) throws IOException
+	private String jound;
+	private Clip clip;
+
+	public Sound(String j)
 	{
-		//creates JFrame to put pictures on top of 	
-		JFrame frame = new JFrame();
-		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
-		//when you close the window, it will terminate the code
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//All the photos we have and setting the layout of the border to the center
-		final JB jb= new JB();
-		frame.add(jb,BorderLayout.CENTER);
-		//makes the Frame visible and starts running the code
-		frame.setVisible(true); 
-		jb.startAnimation();
-		
-		
-		
-	
+		//contains file location
+		jound = j;
 	}
+
+	public void makeSound()
+	{
+		//creates a file under the file location
+		File lol = new File(jound);
+		try
+		{
+			//open the clip and start the audio
+			clip = AudioSystem.getClip();
+			clip.open(AudioSystem.getAudioInputStream(lol));
+			clip.start();
+
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+
 }
