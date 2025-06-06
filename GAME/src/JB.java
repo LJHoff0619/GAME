@@ -1,17 +1,22 @@
 import java.awt.Graphics; 
+import java.util.Scanner;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
+
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 public class JB extends JComponent implements Runnable, KeyListener
 {
+	//all images
 	private BufferedImage JB_down;
 	private BufferedImage JB_up;
 	private BufferedImage JB_not_moving;
@@ -21,20 +26,21 @@ public class JB extends JComponent implements Runnable, KeyListener
 	private BufferedImage AL;
 	private BufferedImage AU;
 	private BufferedImage AD;
-	private BufferedImage x;
-	private BufferedImage y;
 	private BufferedImage hoop;
 	private BufferedImage swoosh;
-	private BufferedImage green;
+	private BufferedImage good;
 	private BufferedImage ok;
 	private BufferedImage booty;
-	private BufferedImage mad;
+	private BufferedImage court;
 	private BufferedImage onethree;
-	private BufferedImage airball;
-	
-	private String scoreee;
-	
-	private sound s;
+	//choosing images
+	private BufferedImage x;
+	private BufferedImage y;
+	//difficulty
+	private int gameDifficulty;
+	//sound
+	private Sound s;
+	//all axis positions and speeds
 	private int x_pos;
 	private int x_speed;
 	private int y_pos;
@@ -42,28 +48,27 @@ public class JB extends JComponent implements Runnable, KeyListener
 	private int y_pos3;
 	private int y_pos4;
 	private boolean[] keys = new boolean[256];
-	
-	private long time;
-	
-	
+	private CardLayout layout; 
+	private JPanel layers;
+	private int speed;
 	
 	private int score;
-
+	private Scanner in;
 	public JB()
 	{
-		time = System.currentTimeMillis();
-		
-		
+		in = new Scanner(System.in);
+		//set speeds and positions
 		x_pos = 385;
 		y_pos = -100;
 		y_pos2= -200;
 		y_pos3= -300;
 		y_pos4= -400;
 		x_speed = 8;
-		
+		speed=20;
+		//score
 		score = 0;
-		
-		s = new sound("C:\\Users\\27kimd01\\Downloads\\otj.wav");
+		//sound file
+		s = new Sound("C:\\Users\\27hofl01\\Downloads\\ode-to-joy-piano-68697.wav");
 
 		
 
@@ -71,6 +76,15 @@ public class JB extends JComponent implements Runnable, KeyListener
 		addKeyListener(this);
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
+		//ALL IMAGES TO VARIABLES
+		try
+		{
+			court = ImageIO.read(Test.class.getResourceAsStream("court.jpg"));
+		}
+		catch(IOException | IllegalArgumentException e)
+		{
+			e.printStackTrace();
+		}
 		try
 		{
 			JB_not_moving = ImageIO.read(Test.class.getResourceAsStream("JB_new_not_moving.jpg"));
@@ -79,25 +93,6 @@ public class JB extends JComponent implements Runnable, KeyListener
 		{
 			e.printStackTrace();
 		}
-		
-		try
-		{
-			airball = ImageIO.read(Test.class.getResourceAsStream("airball.jpg"));
-		}
-		catch(IOException | IllegalArgumentException e)
-		{
-			e.printStackTrace();
-		}
-		
-		try
-		{
-			mad = ImageIO.read(Test.class.getResourceAsStream("mad.jpg"));
-		}
-		catch(IOException | IllegalArgumentException e)
-		{
-			e.printStackTrace();
-		}
-
 		
 		try
 		{
@@ -119,7 +114,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 		
 		try
 		{
-			booty = ImageIO.read(Test.class.getResourceAsStream("booty.jpg"));
+			booty = ImageIO.read(Test.class.getResourceAsStream("booty.png"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -129,7 +124,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 		
 		try
 		{
-			green = ImageIO.read(Test.class.getResourceAsStream("greenfn.jpg"));
+			good = ImageIO.read(Test.class.getResourceAsStream("good.jpg"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -139,7 +134,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 		
 		try
 		{
-			ok = ImageIO.read(Test.class.getResourceAsStream("brick.jpg"));
+			ok = ImageIO.read(Test.class.getResourceAsStream("ok.jpg"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -149,7 +144,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 		
 		try
 		{
-			hoop = ImageIO.read(Test.class.getResourceAsStream("images__3_-removebg-preview (2).png"));
+			hoop = ImageIO.read(Test.class.getResourceAsStream("hoop.png"));
 		}
 		catch(IOException | IllegalArgumentException e)
 		{
@@ -238,7 +233,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 		
 
 	}
-
+	//methods to set x to one of JB's poses
 	public void up()
 	{
 		x = JB_up;
@@ -260,14 +255,14 @@ public class JB extends JComponent implements Runnable, KeyListener
 		x= JB_not_moving;
 	}
 	
-	
+	//sets y to how well you did for one arrow
 	public void swoosh()
 	{
 		y = swoosh;
 	}
 	public void good()
 	{
-		y = green;
+		y = good;
 	}
 	public void ok()
 	{
@@ -277,43 +272,42 @@ public class JB extends JComponent implements Runnable, KeyListener
 	{
 		y = booty;
 	}
-	public void airball()
-	{
-		y = airball;
-	}
+	//ending
 	public void onethree()
 	{
 		y= onethree;
 	}
-	public void mad()
+	//difficulty
+	public void setDifficulty(int x)
 	{
-		x = mad;
+		gameDifficulty = x;
 	}
 	
-
 	public void startAnimation()
 	{
 		Thread t = new Thread(this);
 		t.start();
+		//starts out stationary
 		notMoving();
 	}
 
 	public void paintComponent(Graphics g)
-	{
-  		g.drawImage(x, 50, 400, null);
-  		
+	{	
+		//painting the background and JB
+		g.drawImage(court, 0, 0, 1400, 900, null);
+  		g.drawImage(x, 20,300,500,300, null);
+  		//all the arrows above their assigned baskets
   		g.drawImage(AU, 750, y_pos3, null);
   		g.drawImage(AD, 600, y_pos4, null);
   		g.drawImage(AL, 450, y_pos, null);
   		g.drawImage(AR,900,y_pos2,null);
-  		
+  		//baskets
   		g.drawImage(hoop, 400, 400, null);
   		g.drawImage(hoop, 550, 400, null);
   		g.drawImage(hoop, 700, 400, null);
   		g.drawImage(hoop, 850, 400, null);
-  		g.drawString("string", 50 ,50 );
-  		
-  		g.drawImage(y, 0, 100,null);
+  		//how they did
+  		g.drawImage(y, 100, 50,null);
 
 	}
 	public void keyTyped(KeyEvent e) 
@@ -324,147 +318,96 @@ public class JB extends JComponent implements Runnable, KeyListener
 	
 	public void keyPressed(KeyEvent e) 
 	{
-		
+		//if you go left
 		if (e.getKeyCode() == 37) 
 			{
+			//JB pose left
 			left();
+			//depending on how far the arrow is to the hoop when you press the key, your score will go up 
 				if((y_pos<= 450 && y_pos >425) || (y_pos< 375 && y_pos >= 350))
 				{
-					swoosh();
-					score+=2;
+					good();
 					
+					score+=2;
 					System.out.println("+2! score:" + score);
 					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 					
 					
 				}
-				else if(y_pos <= 425 && y_pos >= 375)
+				if(y_pos <= 425 && y_pos >= 375)
 				{
-					good();	
+					swoosh();
 					score+=3;
 					System.out.println("+3! score: " + score);
+					
 					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 				}
-				
-				else if (y_pos <= 490 && y_pos >450 || y_pos < 350 && y_pos >= 310)
-				{
-					ok();
-					score+=1;
-					System.out.println("+1! score: " + score);
-					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-				}
-				else
-				{
-					airball();
-					score-=1;
-					System.out.println("-1! score: " + score);
-					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-				}
-				
-				
 				
 			}
+		//if you go right
 		if (e.getKeyCode() == 39) 
 		{
+			//JB pose right
 			right();
+			//depending on how far the arrow is to the hoop when you press the key, your score will go up 
 			if((y_pos2<= 450 && y_pos2 >425) || (y_pos2< 375 && y_pos2 >= 350))
 			{
-				swoosh();
-				
+				good();
 				score+=2;
 				System.out.println("+2! score:" + score);
 				y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 				
 			}
-			else if(y_pos2 <= 425 && y_pos2 >= 375)
+			if(y_pos2 <= 425 && y_pos2 >= 375)
 			{
-				good();
+				swoosh();
 				score+=3;
 				System.out.println("+3! score: " + score);
-				y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-			}
-			else if (y_pos2 <= 490 && y_pos2 >450 || y_pos2 < 350 && y_pos2 >= 310)
-			{
-				ok();
-				score+=1;
-				System.out.println("+1! score: " + score);
-				y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-			}
-			else
-			{
-				airball();
-				score-=1;
-				System.out.println("-1! score: " + score);
 				y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 			}
 		}
-		
+		//if you go up
 		if (e.getKeyCode() == 38) 
 			{
+			//JB pose up
 			up();
+			//depending on how far the arrow is to the hoop when you press the key, your score will go up 
 			if((y_pos3<= 450 && y_pos3 >425) || (y_pos3< 375 && y_pos3 >= 350))
 			{
-				swoosh();
-				
+				good();
 				score+=2;
 				System.out.println("+2! score:" + score);
 				y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 			
 				
 			}
-			else if(y_pos3 <= 425 && y_pos3 >= 375)
+			if(y_pos3 <= 425 && y_pos3 >= 375)
 			{
-				good();
+				swoosh();
 				score+=3;
 				System.out.println("+3! score: " + score);
 				y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 			}
-			else if (y_pos3 <= 490 && y_pos3 >450 || y_pos3 < 350 && y_pos3 >= 310)
-			{
-				ok();
-				score+=1;
-				System.out.println("+1! score: " + score);
-				y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 			}
-			else
-			{
-				airball();
-				score-=1;
-				System.out.println("-1! score: " + score);
-				y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-			}
-			
-			}
+		//if you go down
 		if (e.getKeyCode() == 40) 
 		{
+		//JB pose down
 		down();
+		//depending on how far the arrow is to the hoop when you press the key, your score will go up 
 		if((y_pos4<= 450 && y_pos4 >425) || (y_pos4< 375 && y_pos4 >= 350))
 		{
-			swoosh();
+			good();
 			score+=2;
 			System.out.println("+2! score:" + score);
 			y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 			
 		}
-		else if(y_pos4 <= 425 && y_pos4 >= 375)
+		if(y_pos4 <= 425 && y_pos4 >= 375)
 		{
-			good();
+			swoosh();
 			score+=3;
 			System.out.println("+3! score: " + score);
-			y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-		}
-		else if (y_pos4 <= 490 && y_pos4 >450 || y_pos4 < 350 && y_pos4 >= 310)
-		{
-			ok();
-			score+=1;
-			System.out.println("+1! score: " + score);
-			y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-		}
-		else
-		{
-			airball();
-			score-=1;
-			System.out.println("-1! score: " + score);
 			y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
 		}
 		}
@@ -475,6 +418,7 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 	public void keyReleased(KeyEvent e) 
 	{
+		//brings back to not moving pose
 		try 
 		{
 			Thread.sleep(20);
@@ -491,60 +435,105 @@ public class JB extends JComponent implements Runnable, KeyListener
 
 	public void run()
 	{
+		System.out.println("Enter difficulty:");
+		int p = in.nextInt();
+		setDifficulty(p);
+		//gives time to get ready
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//start audio
 		s.makeSound();
-
+		
 		while (true) {
 			try {
-				y_pos+=15;
-				y_pos2+=15;
-				y_pos3+=15;
-				y_pos4+=15;
+				//moves arrows down screen
+				y_pos+=speed;
+				y_pos2+=speed;
+				y_pos3+=speed;
+				y_pos4+=speed;
+				//miss for arrow 1
 				if(y_pos > 600)
 				{
-					mad();
 					booty();
 					y_pos = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-					score-= 2;
-					System.out.println("-2! :" + score +"  " + y_pos);
+					score-= 1;
+					System.out.println("-1! :" + score +"  " + y_pos);
 				}
-				
+				//miss for arrow 2
 				if(y_pos2 > 600)
 				{
-					mad();
 					booty();
 					y_pos2 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-					score-= 2;
-				System.out.println("-2! :" + score);
+					score-= 1;
+					System.out.println("-1! :" + score);
 				}
-				
+				//miss for arrow 3
 				if(y_pos3 > 600)
 				{
-					mad();
 					booty();
 					y_pos3 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-					score-= 2;
-					System.out.println("-2! :" + score);
+					score-= 1;
+					System.out.println("-1! :" + score);
 				}
-				
+				//miss for arrow 4
 				if(y_pos4 > 600)
 				{
-					mad();
 					booty();
 					y_pos4 = (int) ((-1 * (Math.random()*(1500-500)/100)))*100+-100;
-					score-= 2;
-					System.out.println("-2! :" + score);
+					score-= 1;
+					System.out.println("-1! :" + score);
 				}
-						
-				
+				//when the song ends, prints final score and exits code
+				if (s.isEnded())
+				{
+					System.out.println("Final Score: " + score);
+					System.exit(0);
+				}
 				repaint();
 				Thread.sleep(20);
 				
-			} catch (InterruptedException e) {
+			}
+			catch (InterruptedException e)
+			{
 				e.printStackTrace();
 			}
 		}
+		
 	}
 
+	public void difficultySelect() 
+	{
+		//depending on what difficulty you choose,
+		//the game will speed up or slow down the arrows
+		if(gameDifficulty==1)
+		{
+			speed=10;
+		}
+		if(gameDifficulty==2)
+		{
+			speed=20;
+		}
+		if(gameDifficulty==3)
+		{
+			speed=30;
+		}
+		if(gameDifficulty==4)
+		{
+			speed=40;
+		}
+	}
+
+	//menu screen
+	public void setMenu(CardLayout layout1, JPanel layers1) 
+	{
+		layout = layout1;
+		layers = layers1;
+	}
+	
 
 }
 
